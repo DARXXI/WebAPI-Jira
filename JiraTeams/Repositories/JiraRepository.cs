@@ -1,14 +1,10 @@
 ﻿using JiraTeams.Repositories.Interfaces;
 using Atlassian.Jira;
-using JiraTeams.Entities;
-using System;
-using System.Net;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using System.Text.Json;
-using Microsoft.Extensions.Configuration;
+using System.Net.Http;
 
 namespace JiraTeams.Repositories
 {
@@ -16,7 +12,7 @@ namespace JiraTeams.Repositories
     {
         readonly Jira _jira;
         private readonly IConfiguration _configuration;
-        public JiraRepository(DataBaseContext context, IConfiguration configuration) : base(context)
+        public JiraRepository(IConfiguration configuration)
         {
             _configuration = configuration;
             _jira = Jira.CreateRestClient(
@@ -26,14 +22,24 @@ namespace JiraTeams.Repositories
             );
         }
         
-        public async void CreateIssueAsync(string issueJSON)
+        public async void CreateIssueAsync(string issueJSON) //linking 2 issues, needed to be separeted with the issue creation
         {
-            var issue = _jira.CreateIssue("STUD");
-            issue.Type = "Task";
-            issue.Priority = "Major";
-            issue.Summary = "Issue Summary";
+            var jsonBodyData = "{\"comment\":{\"body\":{\"content\":[{\"content\":[{\"text\":\"Linkedrelatedissue!\",\"type\":\"text\"}],\"type\":\"paragraph\"}],\"type\":\"doc\",\"version\":1},\"visibility\":{\"identifier\":\"276f955c-63d7-42c8-9520-92d01dca0625\",\"type\":\"group\",\"value\":\"jira-software-users\"}},\"inwardIssue\":{\"key\":\"STUD-10\"},\"outwardIssue\":{\"key\":\"STUD-32\"},\"type\":{\"name\":\"Clones\"}}";
+            var f = Newtonsoft.Json.JsonConvert.SerializeObject(jsonBodyData, Newtonsoft.Json.Formatting.Indented);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_configuration.GetValue<string>
+            ("AuthorizationJira:Username")}:{_configuration.GetValue<string>("AuthorizationJira:Password")}")));
 
-            await issue.SaveChangesAsync();
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            client.DefaultRequestHeaders.Add("Content-Type'", "application/json");
+
+            var stringContent = new StringContent(f);
+
+            using HttpResponseMessage response = await client.PostAsync(
+            "https://jira.arsis.ru/rest/api/3/issueLink",
+            stringContent);
+
+            Console.WriteLine(response.IsSuccessStatusCode);
         }
 
         public async void ReadIssuesAsync() 
@@ -51,10 +57,9 @@ namespace JiraTeams.Repositories
 
         public async void GetLinkedIssues(string issueKey)
         {
-            var username = "Arthur.Artyushenkov";
-            var password = "Vag99296";
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
-            "Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}")));
+            "Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_configuration.GetValue<string>
+            ("AuthorizationJira:Username")}:{_configuration.GetValue<string>("AuthorizationJira:Password")}")));
 
             var response = await client.GetAsync($"https://jira.arsis.ru/rest/api/2/issue/{issueKey}");
 

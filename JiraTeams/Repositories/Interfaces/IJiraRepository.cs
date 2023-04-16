@@ -1,6 +1,4 @@
-﻿using Atlassian.Jira;
-
-namespace JiraTeams.Repositories.Interfaces
+﻿namespace JiraTeams.Repositories.Interfaces
 {
     public interface IJiraRepository
     {
