@@ -21,10 +21,14 @@ namespace JiraTeams.Controllers
         }
 
         [HttpGet]
-        public void Getdd()
+        public async Task<IActionResult> Get()
         {
-            _jiraRepository.ReadIssueAsync();
-            _jiraRepository.CreateIssueAsync();
+            while (true)
+            {
+                //_jiraRepository.GetLinkedIssues();
+                _jiraRepository.ReadIssuesAsync();
+                await Task.Delay(10000);
+            }
         }
     }
 }

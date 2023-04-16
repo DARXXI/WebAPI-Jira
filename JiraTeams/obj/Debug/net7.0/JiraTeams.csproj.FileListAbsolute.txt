@@ -34,3 +34,13 @@ C:\Users\arthu\source\repos\JiraTeams\JiraTeams\obj\Debug\net7.0\refint\JiraTeam
 C:\Users\arthu\source\repos\JiraTeams\JiraTeams\obj\Debug\net7.0\JiraTeams.pdb
 C:\Users\arthu\source\repos\JiraTeams\JiraTeams\obj\Debug\net7.0\JiraTeams.genruntimeconfig.cache
 C:\Users\arthu\source\repos\JiraTeams\JiraTeams\obj\Debug\net7.0\ref\JiraTeams.dll
+C:\Users\arthu\source\repos\JiraTeams\JiraTeams\bin\Debug\net7.0\Humanizer.dll
+C:\Users\arthu\source\repos\JiraTeams\JiraTeams\bin\Debug\net7.0\Microsoft.EntityFrameworkCore.dll
+C:\Users\arthu\source\repos\JiraTeams\JiraTeams\bin\Debug\net7.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+C:\Users\arthu\source\repos\JiraTeams\JiraTeams\bin\Debug\net7.0\Microsoft.EntityFrameworkCore.Design.dll
+C:\Users\arthu\source\repos\JiraTeams\JiraTeams\bin\Debug\net7.0\Microsoft.EntityFrameworkCore.Relational.dll
+C:\Users\arthu\source\repos\JiraTeams\JiraTeams\bin\Debug\net7.0\Microsoft.Extensions.DependencyModel.dll
+C:\Users\arthu\source\repos\JiraTeams\JiraTeams\bin\Debug\net7.0\Mono.TextTemplating.dll
+C:\Users\arthu\source\repos\JiraTeams\JiraTeams\bin\Debug\net7.0\Npgsql.dll
+C:\Users\arthu\source\repos\JiraTeams\JiraTeams\bin\Debug\net7.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
+C:\Users\arthu\source\repos\JiraTeams\JiraTeams\bin\Debug\net7.0\System.CodeDom.dll
