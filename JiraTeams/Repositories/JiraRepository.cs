@@ -34,7 +34,8 @@ namespace JiraTeams.Repositories
             await targetIssue.SaveChangesAsync();
             CreateIssuesLinkingAsync(issue.Key.Value, targetIssue.Key.Value); 
         }
-        
+
+        //TODO object mapping
         public async void CreateIssuesLinkingAsync(string inwardKey, string outwardKey) 
         {
             var jsonContent = "{\"inwardIssue\":{\"key\":\""+inwardKey+"\"},\"outwardIssue\":{\"key\":\""+outwardKey+"\"},\"type\":{\"name\":\"Cloners\"}}";
@@ -65,6 +66,7 @@ namespace JiraTeams.Repositories
             }
         }
 
+        //TODO object mapping
         public async void GetLinkedIssues(Atlassian.Jira.Issue issue)
         {
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
@@ -75,7 +77,7 @@ namespace JiraTeams.Repositories
 
             if (response.IsSuccessStatusCode)
             {
-                var links = JObject.Parse(await response.Content.ReadAsStringAsync())["fields"]["issuelinks"].ToList();
+                var links = JObject.Parse(await response.Content.ReadAsStringAsync())["fields"]["issuelinks"].ToList();//json to classes c#
                 if (links.Count != 0)
                 {
                     var linkedKey = "";
@@ -97,13 +99,18 @@ namespace JiraTeams.Repositories
                 }  
                 else
                 {
-                    CreateIssueDuplicateAsync(issue);
+                    CreateIssueDuplicateAsync(issue); //token
                 }
             }
             else
             {
                 Console.WriteLine(response.ReasonPhrase);
             }
+        }
+
+        public List<Issue> GetAllIssues()
+        {
+            return _jira.Issues.Queryable.OrderByDescending(t => t.Created).ToList();
         }
     }
 }

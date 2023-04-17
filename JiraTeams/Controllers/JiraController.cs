@@ -2,12 +2,14 @@ using Microsoft.AspNetCore.Mvc;
 using Atlassian.Jira;
 using JiraTeams.Repositories;
 using JiraTeams.Repositories.Interfaces;
+using SimpleJson;
+using System.Web;
 
 namespace JiraTeams.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class JiraController : ControllerBase
+    public class JiraController : BaseController
     {
         private readonly IJiraRepository _jiraRepository;
         
@@ -20,14 +22,13 @@ namespace JiraTeams.Controllers
             _logger = logger;
         }
 
+        //TODO all issues
+
+        //TODO move to program.cs https://habr.com/ru/articles/658847/
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public IActionResult Get()
         {
-            while (true)
-            {
-                _jiraRepository.ReadIssues();
-                await Task.Delay(60000);
-            }
+            return Json(_jiraRepository.GetAllIssues().ToList());
         }
     }
 }

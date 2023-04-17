@@ -44,3 +44,6 @@ C:\Users\arthu\source\repos\JiraTeams\JiraTeams\bin\Debug\net7.0\Mono.TextTempla
 C:\Users\arthu\source\repos\JiraTeams\JiraTeams\bin\Debug\net7.0\Npgsql.dll
 C:\Users\arthu\source\repos\JiraTeams\JiraTeams\bin\Debug\net7.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
 C:\Users\arthu\source\repos\JiraTeams\JiraTeams\bin\Debug\net7.0\System.CodeDom.dll
+C:\Users\arthu\source\repos\JiraTeams\JiraTeams\bin\Debug\net7.0\System.Net.Http.Formatting.dll
+C:\Users\arthu\source\repos\JiraTeams\JiraTeams\bin\Debug\net7.0\System.Web.Http.dll
+C:\Users\arthu\source\repos\JiraTeams\JiraTeams\bin\Debug\net7.0\Newtonsoft.Json.Bson.dll
