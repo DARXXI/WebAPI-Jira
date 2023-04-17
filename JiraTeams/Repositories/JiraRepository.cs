@@ -22,22 +22,20 @@ namespace JiraTeams.Repositories
             );
         }
         
-        public async void CreateIssueAsync(string issueJSON) //linking 2 issues, needed to be separeted with the issue creation
+        public async void CreateIssuesLinkingAsync(string inwardKey, string outwardKey) //linking 2 issues, needed to be separeted with the issue creation
         {
-            var jsonBodyData = "{\"comment\":{\"body\":{\"content\":[{\"content\":[{\"text\":\"Linkedrelatedissue!\",\"type\":\"text\"}],\"type\":\"paragraph\"}],\"type\":\"doc\",\"version\":1},\"visibility\":{\"identifier\":\"276f955c-63d7-42c8-9520-92d01dca0625\",\"type\":\"group\",\"value\":\"jira-software-users\"}},\"inwardIssue\":{\"key\":\"STUD-10\"},\"outwardIssue\":{\"key\":\"STUD-32\"},\"type\":{\"name\":\"Clones\"}}";
-            var f = Newtonsoft.Json.JsonConvert.SerializeObject(jsonBodyData, Newtonsoft.Json.Formatting.Indented);
+            var jsonBodyData = "{\"inwardIssue\":{\"key\":\"STUD-37\"},\"outwardIssue\":{\"key\":\"STUD-9\"},\"type\":{\"name\":\"Cloners\"}}";
+            var jsonContent = new StringContent(jsonBodyData, Encoding.UTF8, "application/json");
+
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
             "Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_configuration.GetValue<string>
             ("AuthorizationJira:Username")}:{_configuration.GetValue<string>("AuthorizationJira:Password")}")));
 
             client.DefaultRequestHeaders.Add("Accept", "application/json");
-            client.DefaultRequestHeaders.Add("Content-Type'", "application/json");
-
-            var stringContent = new StringContent(f);
 
             using HttpResponseMessage response = await client.PostAsync(
-            "https://jira.arsis.ru/rest/api/3/issueLink",
-            stringContent);
+            "https://jira.arsis.ru/rest/api/2/issueLink",
+            jsonContent);
 
             Console.WriteLine(response.IsSuccessStatusCode);
         }
@@ -89,7 +87,7 @@ namespace JiraTeams.Repositories
                 }  
                 else
                 {
-                    CreateIssueAsync(json);
+                    CreateIssuesLinkingAsync("","");
                 }
             }
             else
