@@ -5,10 +5,11 @@ using System.Text;
 using Newtonsoft.Json.Linq;
 using System.Text.Json;
 using System.Net.Http;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace JiraTeams.Repositories
 {
-    public class JiraRepository : BaseRepository,IJiraRepository 
+    public class JiraRepository : BaseRepository, IJiraRepository 
     {
         readonly Jira _jira;
         private readonly IConfiguration _configuration;
@@ -21,11 +22,23 @@ namespace JiraTeams.Repositories
                 _configuration.GetValue<string>("AuthorizationJira:Password")
             );
         }
-        
-        public async void CreateIssuesLinkingAsync(string inwardKey, string outwardKey) //linking 2 issues, needed to be separeted with the issue creation
+
+        public async void CreateIssueDuplicateAsync(Atlassian.Jira.Issue issue)
         {
-            var jsonBodyData = "{\"inwardIssue\":{\"key\":\"STUD-37\"},\"outwardIssue\":{\"key\":\"STUD-9\"},\"type\":{\"name\":\"Cloners\"}}";
-            var jsonContent = new StringContent(jsonBodyData, Encoding.UTF8, "application/json");
+            var targetIssue = _jira.CreateIssue(_configuration.GetValue<string>("Projects:TargetProjectName"));
+
+            targetIssue.Type = issue.Type;
+            targetIssue.Priority = issue.Priority;
+            targetIssue.Summary = issue.Summary;
+
+            await targetIssue.SaveChangesAsync();
+            CreateIssuesLinkingAsync(issue.Key.Value, targetIssue.Key.Value); 
+        }
+        
+        public async void CreateIssuesLinkingAsync(string inwardKey, string outwardKey) 
+        {
+            var jsonContent = "{\"inwardIssue\":{\"key\":\""+inwardKey+"\"},\"outwardIssue\":{\"key\":\""+outwardKey+"\"},\"type\":{\"name\":\"Cloners\"}}";
+            var jsonStringContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
             "Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_configuration.GetValue<string>
@@ -33,43 +46,40 @@ namespace JiraTeams.Repositories
 
             client.DefaultRequestHeaders.Add("Accept", "application/json");
 
-            using HttpResponseMessage response = await client.PostAsync(
-            "https://jira.arsis.ru/rest/api/2/issueLink",
-            jsonContent);
+            using HttpResponseMessage response = await client.PostAsync("https://jira.arsis.ru/rest/api/2/issueLink", jsonStringContent);
 
             Console.WriteLine(response.IsSuccessStatusCode);
         }
 
-        public async void ReadIssuesAsync() 
-        {       
-            var issues = _jira.Issues.Queryable.Where(t => t.Status == "TO DO").OrderByDescending(t => t.Created);
+        public void ReadIssues()
+        {
+            var issues = _jira.Issues.Queryable.Where(t => t.Status == _configuration.GetValue<string>("TriggerStatus"))
+                .OrderByDescending(t => t.Created);
 
             if (issues != null)
             {
                 foreach (Atlassian.Jira.Issue issue in issues)
                 {
-                    GetLinkedIssues(issue.Key.Value);
+                    GetLinkedIssues(issue);
                 }
-            }   
+            }
         }
 
-        public async void GetLinkedIssues(string issueKey)
+        public async void GetLinkedIssues(Atlassian.Jira.Issue issue)
         {
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
             "Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_configuration.GetValue<string>
             ("AuthorizationJira:Username")}:{_configuration.GetValue<string>("AuthorizationJira:Password")}")));
 
-            var response = await client.GetAsync($"https://jira.arsis.ru/rest/api/2/issue/{issueKey}");
+            var response = await client.GetAsync($"https://jira.arsis.ru/rest/api/2/issue/{issue.Key.Value}");
 
             if (response.IsSuccessStatusCode)
             {
-                var json = await response.Content.ReadAsStringAsync();
-                var linkedIssues = JObject.Parse(json)["fields"]["issuelinks"].ToList();
-
-                if (linkedIssues.Count != 0)
+                var links = JObject.Parse(await response.Content.ReadAsStringAsync())["fields"]["issuelinks"].ToList();
+                if (links.Count != 0)
                 {
                     var linkedKey = "";
-                    foreach (JToken link in linkedIssues)
+                    foreach (JToken link in links)
                     {
                         try
                         {
@@ -81,13 +91,13 @@ namespace JiraTeams.Repositories
                         }
                         finally
                         {
-                            Console.WriteLine(linkedKey);
+                            //some logic here
                         }
                     }
                 }  
                 else
                 {
-                    CreateIssuesLinkingAsync("","");
+                    CreateIssueDuplicateAsync(issue);
                 }
             }
             else

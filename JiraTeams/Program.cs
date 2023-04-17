@@ -17,11 +17,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true); //timestamp_with_timezone fix
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

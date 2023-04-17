@@ -2,10 +2,10 @@
 {
     public interface IJiraRepository
     {
+        public void CreateIssueDuplicateAsync(Atlassian.Jira.Issue issue);
+        public void ReadIssues();
+        public void GetLinkedIssues(Atlassian.Jira.Issue issue);
         public void CreateIssuesLinkingAsync(string inwardKey, string outwardKey);
-        public void ReadIssuesAsync();
-
-        public void GetLinkedIssues(string key);
         //public Issue UpdateIssue(Issue issue);
         //public Issue DeleteIssue(int id);
     }

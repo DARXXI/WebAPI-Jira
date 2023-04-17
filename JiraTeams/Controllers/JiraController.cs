@@ -25,9 +25,8 @@ namespace JiraTeams.Controllers
         {
             while (true)
             {
-                //_jiraRepository.GetLinkedIssues();
-                _jiraRepository.ReadIssuesAsync();
-                await Task.Delay(10000);
+                _jiraRepository.ReadIssues();
+                await Task.Delay(60000);
             }
         }
     }
